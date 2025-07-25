@@ -1,0 +1,193 @@
+/* app/globals.css - Low-bit terminal theme with green text, monospace fonts, centered layout, and moderately enhanced CRT scanline animation */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0a0a0a; /* Dark, near-black background for CRT vibe */
+  color: #00ff00; /* Bright green text, classic terminal color */
+  font-family: 'Courier New', Courier, monospace; /* Monospace font for terminal aesthetic */
+  font-size: 16px; /* Standard terminal font size */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Full viewport height for centering */
+  text-align: center;
+  position: relative; /* Relative positioning for pseudo-element animation */
+  overflow: hidden; /* Hide any overflowing animation */
+}
+
+/* CRT scanline animation using pseudo-element with moderate enhancement */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    transparent 0%,
+    rgba(0, 255, 0, 0.1) 3px, /* Slightly thicker, moderately bright green */
+    transparent 3px,
+    transparent 6px
+  );
+  opacity: 0.5; /* Increased from 0.3 for better visibility */
+  pointer-events: none; /* Allow clicks through the overlay */
+  animation: scanline 4s linear infinite; /* Slow, continuous scanline movement */
+  -webkit-animation: scanline 4s linear infinite; /* Vendor prefix for Chrome */
+  transform: translateZ(0); /* Force repaint for animation */
+  z-index: 0; /* Ensure below content */
+}
+
+/* Keyframes with vendor prefix for Chrome compatibility and moderate flicker */
+@keyframes scanline {
+  0% {
+    background-position: 0 0;
+    opacity: 0.5; /* Base opacity */
+  }
+  50% {
+    opacity: 0.7; /* Moderate flicker for retro effect */
+  }
+  100% {
+    background-position: 0 200px; /* Larger shift for noticeable scrolling */
+    opacity: 0.5; /* Return to base */
+  }
+}
+
+@-webkit-keyframes scanline {
+  0% {
+    background-position: 0 0;
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    background-position: 0 200px;
+    opacity: 0.5;
+  }
+}
+
+.container {
+  max-width: 600px; /* Tight container width for compact layout */
+  padding: 10px; /* Minimal padding */
+  z-index: 1; /* Ensure content is above the animation overlay */
+}
+
+h1 {
+  font-size: 24px; /* Slightly larger for title but still terminal-like */
+  margin-bottom: 10px; /* Tight spacing */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Space between icon and text */
+}
+
+.icon {
+  font-size: 20px; /* Slightly smaller than title for balance */
+}
+
+.token-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px; /* Tight spacing between elements */
+}
+
+.connect-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.token-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px; /* Tight spacing for details */
+}
+
+.connect-button {
+  background-color: #1a1a1a; /* Dark button background */
+  color: #00ff00; /* Green text */
+  border: 2px solid #00ff00; /* Green border for CRT effect */
+  padding: 6px 12px; /* Compact padding */
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s; /* Subtle hover effect */
+}
+
+.connect-button:hover:not(:disabled) {
+  background-color: #00ff00; /* Green background on hover */
+  color: #0a0a0a; /* Dark text for contrast */
+}
+
+.connect-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #ff3333; /* Red for errors, contrasting with green theme */
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+p {
+  font-size: 14px; /* Slightly smaller for compact display */
+  line-height: 1.2; /* Tight line spacing */
+}
+
+.transfer-container {
+  margin-top: 20px; /* Spacing from details */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px; /* Tight spacing */
+}
+
+h2 {
+  font-size: 18px; /* Smaller heading for compactness */
+  margin-bottom: 5px;
+}
+
+.input-field {
+  background-color: #1a1a1a; /* Dark input background */
+  color: #00ff00; /* Green text */
+  border: 1px solid #00ff00; /* Green border */
+  padding: 4px 8px; /* Compact padding */
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  width: 250px; /* Fixed width for alignment */
+}
+
+.transfer-button {
+  background-color: #1a1a1a;
+  color: #00ff00;
+  border: 2px solid #00ff00;
+  padding: 6px 12px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.transfer-button:hover:not(:disabled) {
+  background-color: #00ff00;
+  color: #0a0a0a;
+}
+
+.transfer-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.success {
+  color: #00ff00; /* Green for success messages */
+  font-size: 14px;
+}
