@@ -5,7 +5,7 @@ import fs from 'fs/promises'; // Server-side import for fs
 import path from 'path'; // For path resolution
 
 // Get the absolute path to the deployment file (adjust to your workspace structure)
-const deploymentFile = path.join(process.cwd(), '..', 'token-project-backend', 'ignition', 'deployments', 'chain-31337', 'deployed_addresses.json');
+const deploymentFile = path.join(process.cwd(), '..', 'token-project-backend', 'ignition', 'deployments', 'chain-11155111', 'deployed_addresses.json');
 
 async function getTokenAddress() {
   try {
