@@ -14,10 +14,14 @@ const ERC20_ABI = [
   "function transfer(address to, uint256 value) returns (bool)"
 ];
 
-const PROVIDER_URL = 'http://127.0.0.1:8545'; // Local Hardhat node
-const HARDHAT_CHAIN_ID = '0x7a69'; // Chain ID 31337 in hex
+export default function TokenInfo({ onConnectionChange, tokenAddress, providerUrl, chainId }) {
 
-export default function TokenInfo({ onConnectionChange, tokenAddress }) {
+  // Convert chainId to hex if it's a decimal number, or use as-is if already hex
+  const hexedChainId = typeof chainId === 'number' 
+    ? '0x' + chainId.toString(16) 
+    : chainId.startsWith('0x') ? chainId : '0x' + parseInt(chainId, 10).toString(16);
+
+
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null); // State for signer (for transactions)
   const [account, setAccount] = useState(null);
@@ -56,21 +60,21 @@ export default function TokenInfo({ onConnectionChange, tokenAddress }) {
 
     setIsConnecting(true);
     try {
-      const chainId = await ethereum.request({ method: 'eth_chainId' });
-      if (chainId !== HARDHAT_CHAIN_ID) {
+      const ethChainId = await ethereum.request({ method: 'eth_chainId' });
+      if (ethChainId !== hexedChainId) {
         try {
           await ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: HARDHAT_CHAIN_ID }],
+            params: [{ chainId: hexedChainId }],
           });
         } catch (switchError) {
           if (switchError.code === 4902) {
             await ethereum.request({
               method: 'wallet_addEthereumChain',
               params: [{
-                chainId: HARDHAT_CHAIN_ID,
+                chainId: '0x7a69', // Chain ID 31337 in hex
                 chainName: 'Hardhat Local',
-                rpcUrls: [PROVIDER_URL],
+                rpcUrls: [providerUrl],
                 nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
                 blockExplorerUrls: null,
               }],
