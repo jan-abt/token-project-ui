@@ -17,14 +17,14 @@ const ERC20_ABI = [
 export default function TokenInfo({ onConnectionChange, chain }) {
 
   // In TokenInfo.js (replace the existing hexedChainId block)
-  const hexed = (chainId) => 
+  const hexed = (chainId) =>
     chainId == null
-    ? '0x7a69'  // Default to Hardhat chain ID (31337 in hex) as fallback
-    : typeof chainId === 'number'
-      ? '0x' + chainId.toString(16)
-      : typeof chainId === 'string' && chainId.startsWith('0x')
-        ? chainId
-        : '0x' + parseInt(chainId, 10).toString(16);
+      ? '0x7a69'  // Default to Hardhat chain ID (31337 in hex) as fallback
+      : typeof chainId === 'number'
+        ? '0x' + chainId.toString(16)
+        : typeof chainId === 'string' && chainId.startsWith('0x')
+          ? chainId
+          : '0x' + parseInt(chainId, 10).toString(16);
 
 
   // Use chain directly
@@ -62,27 +62,14 @@ export default function TokenInfo({ onConnectionChange, chain }) {
   const connectWallet = async () => {
     setErrorMessage('');
     const ethereum = getEthereumProvider();
-
     if (!ethereum) {
-      setErrorMessage('Please install or enable MetaMask. Other wallets like Phantom may not be fully compatible.');
+      setErrorMessage('Please install MetaMask.');
       return;
     }
 
     setIsConnecting(true);
     try {
-      const ethChainId =
-        await ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [{
-            chainId: hexedChainId,
-            chainName: chain.name,
-            rpcUrls: [providerUrl],
-            nativeCurrency: chain.nativeCurrency,
-            blockExplorerUrls: null, // Or add if available, e.g., ['https://sepolia.etherscan.io']
-          }],
-        });
-
-
+      const ethChainId = await ethereum.request({ method: 'eth_chainId' });
       if (ethChainId !== hexedChainId) {
         try {
           await ethereum.request({
@@ -94,13 +81,16 @@ export default function TokenInfo({ onConnectionChange, chain }) {
             await ethereum.request({
               method: 'wallet_addEthereumChain',
               params: [{
-                chainId: '0x7a69', // Chain ID 31337 in hex
-                chainName: 'Hardhat Local',
+                chainId: hexedChainId,
+                chainName: chain.name,
                 rpcUrls: [providerUrl],
-                nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
-                blockExplorerUrls: null,
+                nativeCurrency: chain.nativeCurrency,
+                blockExplorerUrls: chain.blockExplorerUrls,
               }],
             });
+          } else if (switchError.code === -32602) {
+            setErrorMessage('Params mismatch (e.g., currency symbol). \nUpdate Sepolia in MetaMask: Settings > Networks > Sepolia > Edit symbol ...');
+            return; // Exit to avoid loop
           } else {
             throw switchError;
           }

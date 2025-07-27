@@ -11,7 +11,7 @@ export const chains = {
     id: process.env.NEXT_PUBLIC_CHAIN_ID, // '0xaa36a7' in hex
     name: 'Sepolia',
     rpc: process.env.NEXT_PUBLIC_PROVIDER_URL,
-    nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+    nativeCurrency: { name: 'Ether', symbol: 'SepoliaETH', decimals: 18 },
     tokenAddress: process.env.NEXT_PUBLIC_TOKEN_ADDRESS
   },
   // Add more networks as needed, e.g., mainnet
