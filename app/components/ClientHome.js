@@ -2,10 +2,16 @@
 'use client';
 
 import TokenInfo from './TokenInfo';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ClientHome({ chain }) { // Receive chain prop
   const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    if (chain) {
+      console.log(`Client-side: Selected chain: ${chain.name}, token: ${chain.tokenAddress}`);
+    }
+  }, [chain]);
 
   const handleConnectionChange = (connected) => {
     setIsConnected(connected);
