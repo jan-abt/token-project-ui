@@ -1,19 +1,16 @@
-// app/page.js - Server component with env vars for config values
-
+// app/page.js
 import ClientHome from './components/ClientHome';
+import { chains } from './config/chains.js'; // Adjust path
 
-// Fetch token address from env var (set in Vercel or .env.local)
-const tokenAddress = process.env.NEXT_PUBLIC_TOKEN_ADDRESS;
-
-// Fetch config values from env vars
-const providerUrl = process.env.NEXT_PUBLIC_PROVIDER_URL ;
-const chainId = process.env.NEXT_PUBLIC_CHAIN_ID;
+// Fetch from env (server-side)
+const network = process.env.NEXT_PUBLIC_NETWORK;
+const selectedChain = chains[network];
 
 export default function Home() {
-  console.log(`Final values - tokenAddress: ${tokenAddress}, providerUrl: ${providerUrl}, chainId: ${chainId}`);
+  console.log(`Selected chain: ${selectedChain.name}, Token: ${selectedChain.tokenAddress}`);
   return (
     <div className="container">
-      <ClientHome tokenAddress={tokenAddress} providerUrl={providerUrl} chainId={chainId} /> {/* Pass values to client component */}
+      <ClientHome chain={selectedChain} /> {/* Pass the full chain object */}
     </div>
   );
 }

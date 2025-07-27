@@ -26,7 +26,4 @@ if [ -n "$PID" ]; then
   fi
 fi
 
-# Start Next.js app with NODE_ENV=development, unsetting local overrides
-unset NEXT_PUBLIC_TOKEN_ADDRESS NEXT_PUBLIC_PROVIDER_URL NEXT_PUBLIC_CHAIN_ID
-
-NODE_ENV=development npm run dev
+npm run dev

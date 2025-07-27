@@ -14,13 +14,23 @@ const ERC20_ABI = [
   "function transfer(address to, uint256 value) returns (bool)"
 ];
 
-export default function TokenInfo({ onConnectionChange, tokenAddress, providerUrl, chainId }) {
+export default function TokenInfo({ onConnectionChange, chain }) {
 
-  // Convert chainId to hex if it's a decimal number, or use as-is if already hex
-  const hexedChainId = typeof chainId === 'number' 
-    ? '0x' + chainId.toString(16) 
-    : chainId.startsWith('0x') ? chainId : '0x' + parseInt(chainId, 10).toString(16);
+  // In TokenInfo.js (replace the existing hexedChainId block)
+  const hexed = (chainId) => 
+    chainId == null
+    ? '0x7a69'  // Default to Hardhat chain ID (31337 in hex) as fallback
+    : typeof chainId === 'number'
+      ? '0x' + chainId.toString(16)
+      : typeof chainId === 'string' && chainId.startsWith('0x')
+        ? chainId
+        : '0x' + parseInt(chainId, 10).toString(16);
 
+
+  // Use chain directly
+  const providerUrl = chain.rpc;
+  const tokenAddress = chain.tokenAddress;
+  const hexedChainId = hexed(chain.id)
 
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null); // State for signer (for transactions)
@@ -60,7 +70,19 @@ export default function TokenInfo({ onConnectionChange, tokenAddress, providerUr
 
     setIsConnecting(true);
     try {
-      const ethChainId = await ethereum.request({ method: 'eth_chainId' });
+      const ethChainId =
+        await ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: hexedChainId,
+            chainName: chain.name,
+            rpcUrls: [providerUrl],
+            nativeCurrency: chain.nativeCurrency,
+            blockExplorerUrls: null, // Or add if available, e.g., ['https://sepolia.etherscan.io']
+          }],
+        });
+
+
       if (ethChainId !== hexedChainId) {
         try {
           await ethereum.request({
@@ -184,8 +206,8 @@ export default function TokenInfo({ onConnectionChange, tokenAddress, providerUr
       {!account ? (
         <div className="connect-container">
           <p>No wallet connected.</p>
-          <button 
-            onClick={connectWallet} 
+          <button
+            onClick={connectWallet}
             disabled={isConnecting}
             className="connect-button"
           >
@@ -217,8 +239,8 @@ export default function TokenInfo({ onConnectionChange, tokenAddress, providerUr
               onChange={(e) => setAmount(e.target.value)}
               className="input-field"
             />
-            <button 
-              onClick={handleTransfer} 
+            <button
+              onClick={handleTransfer}
               disabled={isTransferring}
               className="transfer-button"
             >

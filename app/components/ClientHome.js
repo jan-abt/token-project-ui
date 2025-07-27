@@ -1,20 +1,15 @@
-// app/components/ClientHome.js - Client component for state and rendering, receives tokenAddress prop
-
-'use client'; // Enable client-side rendering
+// app/components/ClientHome.js
+'use client';
 
 import TokenInfo from './TokenInfo';
 import { useState } from 'react';
 
-export default function ClientHome({ tokenAddress, providerUrl, chainId }) {
+export default function ClientHome({ chain }) { // Receive chain prop
   const [isConnected, setIsConnected] = useState(false);
 
-  // Callback to update connection state from TokenInfo
   const handleConnectionChange = (connected) => {
     setIsConnected(connected);
   };
-
-  // const PROVIDER_URL = 'http://127.0.0.1:8545'; // Local Hardhat node
-  // const HARDHAT_CHAIN_ID = '0x7a69'; // Chain ID 31337 in hex
 
   return (
     <>
@@ -24,9 +19,7 @@ export default function ClientHome({ tokenAddress, providerUrl, chainId }) {
       </h1>
       <TokenInfo 
         onConnectionChange={handleConnectionChange} 
-        tokenAddress={tokenAddress}
-        providerUrl={providerUrl}
-        chainId={chainId}
+        chain={chain} // Pass chain to TokenInfo
       />
     </>
   );

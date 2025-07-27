@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MyToken dApp
 
-## Getting Started
+A full-stack decentralized application (dApp) featuring an ERC-20 token smart contract (`MyToken`) deployed via Hardhat, and a Next.js frontend for wallet connection, token info display, and transfers using MetaMask and ethers.js.
 
-First, run the development server:
+## Overview
+- **Smart Contract**: Basic ERC-20 token with transfer, approve, and allowance functions. Deployable to local Hardhat node (dev) or Sepolia testnet (prod).
+- **Frontend**: Next.js app that connects to MetaMask, fetches token data, displays balance/supply, and enables transfers.
+- **Tech Stack**: Solidity (0.8.30), Hardhat (with Ignition for deployments), Next.js, React, ethers.js.
+- **Environments**: Dev (local Hardhat, chain ID 31337) and Prod (Sepolia, chain ID 11155111).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Prerequisites
+- Node.js (v18+ recommended)
+- MetaMask browser extension (for wallet interactions)
+- For Sepolia deployment: Infura API key and a funded Sepolia test account private key (exported from MetaMask).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup
+1. **Install Dependencies**:
+   ```
+   npm install
+   ```
+   This installs all required packages for both frontend (Next.js, ethers) and backend (Hardhat, @nomicfoundation/hardhat-ignition-ethers).
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+2. **Set Environment Variables**:
+   Create a `.env.local` file in the root directory (for local overrides) and add the following variables. These are used by the Next.js frontend to configure the token address, RPC provider, and chain ID.
+   ```
+   NEXT_PUBLIC_TOKEN_ADDRESS=0xYourDeployedTokenAddressHere  # Update after deployment
+   NEXT_PUBLIC_PROVIDER_URL=http://127.0.0.1:8545  # For dev; change to Infura URL for prod
+   NEXT_PUBLIC_CHAIN_ID=31337  # For dev (Hardhat); 11155111 for Sepolia
+   ```
+   - For dev: Use the defaults above.
+   - For prod: Update `NEXT_PUBLIC_PROVIDER_URL` to your Infura Sepolia endpoint (e.g., `https://sepolia.infura.io/v3/YOUR_INFURA_API_KEY`), and set `NEXT_PUBLIC_CHAIN_ID=11155111`.
+   - Additionally, for Hardhat config (in `hardhat.config.js`), set these in your environment or a `.env` file (loaded via `vars.get`):
+     ```
+     INFURA_API_KEY=your_infura_api_key
+     SEPOLIA_TEST_ACCOUNT_1_PRIVATE_KEY=your_sepolia_private_key
+     ```
+   Note: Never commit `.env` or `.env.local` files—add them to `.gitignore`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. **Deploy the Smart Contract**:
+   - For local Hardhat node:
+     ```
+     ./deploy.sh hardhat
+     ```
+     This starts a local Hardhat node, deploys `MyToken` to localhost (chain ID 31337), and logs the contract address. Copy the deployed token address and update `NEXT_PUBLIC_TOKEN_ADDRESS` in `.env.local`.
+   - For Sepolia testnet:
+     ```
+     ./deploy.sh sepolia
+     ```
+     This deploys directly to Sepolia (chain ID 11155111). Ensure your Infura key and private key are set. Update `.env.local` with the deployed address and Sepolia configs.
 
-## Learn More
+4. **Run the Frontend**:
+   ```
+   ./run.sh
+   ```
+   This starts the Next.js app in development mode (accessible at http://localhost:3000). It will use `NODE_ENV=development` and load vars from `.env.local` (or defaults from `.env.development` if present).
 
-To learn more about Next.js, take a look at the following resources:
+## Usage
+- Open http://localhost:3000 in your browser.
+- Connect MetaMask (ensure it's on the correct network: Hardhat Local for dev, Sepolia for prod).
+- View token info (name, symbol, supply, balance) and perform transfers.
+- For prod: Fund your MetaMask with Sepolia ETH via a faucet (e.g., Infura's Sepolia faucet).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Troubleshooting
+- **Port Conflicts**: If port 3000 (frontend) or 8545 (Hardhat) is in use, the scripts will attempt to kill the process. Check with `lsof -ti tcp:3000` or `lsof -ti tcp:8545`.
+- **Wallet Connection Issues**: Ensure MetaMask is installed and set to the correct chain. The app will prompt to add/switch networks if needed.
+- **Env Var Overrides**: With the updated `run.sh`, `.env.local` takes precedence—great for local testing.
+- **Deployment Errors**: For Sepolia, verify your account has ETH for gas. Check `node.log` for Hardhat node issues in dev.
+- **Contract Verification**: (Optional) Add Etherscan API key to env and run `npx hardhat verify --network sepolia <address>` for public verification.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Enhancements
+- Add tests: Run `npx hardhat test` after adding test files.
+- Multi-network Support: See `config/chains.js` for dynamic chain selection.
+- Security: Consider auditing the contract or using OpenZeppelin libraries.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For contributions or issues, open a pull request!
